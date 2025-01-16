@@ -1,0 +1,27 @@
+# system utils
+xrandr --output HDMI-1  --auto --right-of DP-1  &&
+# Disable screen saver
+xset s off &
+
+# Disable screen blanking
+xset -dpms &
+
+xbindkeys -p &
+
+tint2 -c ~/.config/tint2/tint2rc  &
+nm-applet &
+pasystray &
+blueman-applet &
+
+# configs
+compton --config ~/.config/compton.conf &
+
+#background
+feh --bg-fill /home/kasjer/Downloads/wallpaper.jpg &
+
+~/.keyboard-repeat.sh &
+
+
+# apps
+sleep 10 && copyq &
+sleep 13 && flameshot &
