@@ -42,15 +42,19 @@ install_if_missing git
 install_if_missing openbox
 install_if_missing tint2
 install_if_missing docker.io
-install_if_missing docker-compose-plugin
-install_if_missing docker-compose
 install_if_missing  python3-pip
 install_if_missing  flameshot
 install_if_missing  npm
 
 
 
-echo " -- docker configuration -- " 
+echo " -- docker intallation with docker compose-- " 
+if ! command -v docker-compose &> /dev/null; then
+    wget https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64
+    sudo mv docker-compose-linux-x86_64 /usr/bin/docker-compose
+    sudo chmod +x /usr/bin/docker-compose
+fi
+
 sudo usermod -aG docker $USER
 # Add current user to docker group to avoid using sudo with docker
 if ! groups $USER | grep -q docker; then
