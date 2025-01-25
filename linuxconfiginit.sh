@@ -39,6 +39,26 @@ install_if_missing rofi
 install_if_missing zsh
 install_if_missing vim
 install_if_missing git
+install_if_missing openbox
+install_if_missing tint2
+install_if_missing docker.io
+install_if_missing docker-compose-plugin
+install_if_missing docker-compose
+install_if_missing  python3-pip
+install_if_missing  flameshot
+install_if_missing  npm
+
+
+
+echo " -- docker configuration -- " 
+sudo usermod -aG docker $USER
+# Add current user to docker group to avoid using sudo with docker
+if ! groups $USER | grep -q docker; then
+    echo "Adding user $USER to docker group..."
+    sudo usermod -aG docker $USER
+    newgrp docker
+    echo "Please log out and back in for the changes to take effect for docker to work without sudo"
+fi
 
 
 # Check for and install npm if it's not already available
