@@ -186,6 +186,7 @@ git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM
 
 # Set user email
 git config --global user.email "nik.kow@outlook.com"
+git config --global user.name "NikKowPHP"
 
 # Generate SSH key if it doesn't exist
 if [ ! -f ~/.ssh/id_rsa ]; then
