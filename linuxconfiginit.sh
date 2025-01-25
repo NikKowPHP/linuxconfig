@@ -5,50 +5,66 @@
 # Update the package list
 sudo apt update
 
-# Install the specified packages
-sudo apt install -y \
-  neovim \
-  code \
-  google-cloud-sdk \
-  nodejs \
-  npm \
-  pulseeffects \
-  redshift \
-  terminator \
-  neofetch \
-  copyq \
-  bumblebee-status \
-  thunar \
-  rofi \
-  zsh \
-  vim \
-  git
+# Function to handle optional installations
+install_if_missing() {
+  local package="$1"
+  if ! command -v "$package" &> /dev/null; then
+    echo "Installing $package..."
+    sudo apt install -y "$package"
+  else
+    echo "$package is already installed. Skipping..."
+  fi
+}
+# Function to handle code installations
+install_code() {
+    if command -v "code" &> /dev/null; then
+      echo "Installing Cody-AI VS Code extension..."
+    code --install-extension sourcegraph.cody-ai
+    else
+      echo "Visual Studio code is not installed, skipping cody install"
+    fi
+}
 
-# Install Cody-AI VS Code extension (assuming code is installed)
-code --install-extension sourcegraph.cody-ai
+# Install specified packages only if not already installed
+install_if_missing neovim
+install_if_missing nodejs
+install_if_missing pulseeffects
+install_if_missing redshift
+install_if_missing terminator
+install_if_missing neofetch
+install_if_missing copyq
+install_if_missing bumblebee-status
+install_if_missing thunar
+install_if_missing rofi
+install_if_missing zsh
+install_if_missing vim
+install_if_missing git
 
-# Set up npm for Next.js (if not already configured)
-# This sets the global node_modules directory to ~/.npm-global
-mkdir -p ~/.npm-global
-npm config set prefix '~/.npm-global'
-echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 
-# Source your .bashrc to apply changes immediately
-source ~/.bashrc
+# Check for and install npm if it's not already available
+if command -v npm &> /dev/null; then
+    echo "npm is installed, configuring it..."
+    mkdir -p ~/.npm-global
+    npm config set prefix '~/.npm-global'
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+    source ~/.bashrc
+    npm install -g create-next-app
+else
+    echo "npm is not installed, skipping npm configurations."
+fi
 
-# Install Next.js CLI tools globally
-npm install -g create-next-app
+# Check for and install code if it's not already available
+install_code
 
 # --- Zsh and Oh My Zsh Installation ---
 
 # Check if Zsh is already the default shell
-if [ "$SHELL" != "/bin/zsh" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
+if [[ "$SHELL" != "/bin/zsh" && "$SHELL" != "/usr/bin/zsh" ]]; then
   # Install Oh My Zsh
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
   # Change the default shell to zsh
-  chsh -s $(which zsh)
-
+  sudo chsh -s $(which zsh)
   echo "Zsh installed and set as the default shell."
 else
   echo "Zsh is already the default shell. Skipping installation."
@@ -148,7 +164,7 @@ git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM
 git config --global user.email "nik.kow@outlook.com"
 
 # Generate SSH key if it doesn't exist
-if [ ! -f ~/.ssh/id_rsa ]; hen
+if [ ! -f ~/.ssh/id_rsa ]; then
     echo "Generating new SSH key..."
     ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
 else
@@ -168,6 +184,4 @@ echo "Installation and configuration complete!"
 sudo apt autoremove -y
 sudo apt clean
 
-echo "Clean up complete (optional)!"t
-
-
+echo "Clean up complete (optional)!"
