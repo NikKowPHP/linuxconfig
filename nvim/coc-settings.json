@@ -1,0 +1,4 @@
+{
+  "intelephense.environment.phpExecutablePath": "/usr/bin/php",
+  "intelephense.environment.phpVersion": "8.1"
+}
