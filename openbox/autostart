@@ -19,7 +19,7 @@ compton --config ~/.config/compton.conf &
 #background
 feh --bg-fill /home/kasjer/Downloads/wallpaper.jpg &
 
-~/.keyboard-repeat.sh &
+./keyboard-repeat.sh &
 
 
 # apps
