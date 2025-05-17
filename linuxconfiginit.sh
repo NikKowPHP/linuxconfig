@@ -212,6 +212,32 @@ flutter doctor
 
 echo "--- End of Android Studio and Flutter Installation ---"
 
+# --- Install Fira Code Nerd Fonts ---
+echo "--- Installing Fira Code Nerd Fonts ---"
+
+# Create fonts directory if it doesn't exist
+FONT_DIR="$HOME/.local/share/fonts/NerdFonts"
+mkdir -p $FONT_DIR
+
+# Download Fira Code Nerd Font
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/FiraCode.zip"
+FONT_ZIP="FiraCode.zip"
+
+echo "Downloading Fira Code Nerd Font..."
+wget -O $FONT_ZIP $FONT_URL
+
+echo "Extracting fonts..."
+unzip -o $FONT_ZIP -d $FONT_DIR
+
+echo "Cleaning up..."
+rm $FONT_ZIP
+
+# Update font cache
+echo "Updating font cache..."
+fc-cache -fv
+
+echo "--- End of Fira Code Nerd Fonts Installation ---"
+
 
 # --- Zsh and Oh My Zsh Installation ---
 
@@ -314,7 +340,7 @@ echo "Zsh configured based on your existing settings."
 # Clone the missing plugins
 ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/jeffreytse/zsh-vi-mode ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
+git clone https://github.com/jeffreytse/zsh-vi-mode ${ZSH_CUSTOM:-~/.ohmyzsh/custom}/plugins/zsh-vi-mode
 git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
 
 # --- End of Zsh Configuration ---
