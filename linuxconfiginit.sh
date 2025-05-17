@@ -39,7 +39,7 @@ install_if_missing() {
 }
 # Function to handle code installations
 install_code() {
-    if command -v "code" &> /dev/null; then
+    if command -v "code" &> /dev_null; then
       echo "Installing Cody-AI VS Code extension..."
     code --install-extension sourcegraph.cody-ai
     else
@@ -161,6 +161,58 @@ else
     echo "Homebrew is already installed. Skipping..."
 fi
 
+# --- Install Android Studio and Flutter ---
+echo "--- Installing Android Studio and Flutter ---"
+
+# Install required libraries for Android Studio
+sudo apt-get update
+sudo apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 lib32stdc++6
+
+# Download and extract Android Studio (using a recent version, may need updating)
+ANDROID_STUDIO_URL="https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2023.2.1.23/android-studio-2023.2.1.23-linux.tar.gz"
+ANDROID_STUDIO_TAR="android-studio.tar.gz"
+ANDROID_STUDIO_DIR="$HOME/android-studio"
+
+if [ ! -d "$ANDROID_STUDIO_DIR" ]; then
+    echo "Downloading Android Studio..."
+    wget -O $ANDROID_STUDIO_TAR $ANDROID_STUDIO_URL
+    echo "Extracting Android Studio..."
+    tar -xzf $ANDROID_STUDIO_TAR -C $HOME
+    rm $ANDROID_STUDIO_TAR
+    echo "Android Studio extracted to $ANDROID_STUDIO_DIR"
+    echo "Please run $ANDROID_STUDIO_DIR/bin/studio.sh to complete the setup and install the Android SDK."
+else
+    echo "Android Studio directory already exists. Skipping download and extraction."
+fi
+
+# Download and extract Flutter SDK (using a recent stable version, may need updating)
+FLUTTER_URL="https://storage.googleapis.com/flutter_releases/releases/stable/linux/flutter_linux_3.22.0-stable.tar.xz"
+FLUTTER_TAR="flutter.tar.xz"
+FLUTTER_DIR="$HOME/flutter"
+
+if [ ! -d "$FLUTTER_DIR" ]; then
+    echo "Downloading Flutter SDK..."
+    wget -O $FLUTTER_TAR $FLUTTER_URL
+    echo "Extracting Flutter SDK..."
+    tar -xf $FLUTTER_TAR -C $HOME
+    rm $FLUTTER_TAR
+    echo "Flutter SDK extracted to $FLUTTER_DIR"
+    # Add Flutter to PATH (this is also handled in .zshrc, but good to have here)
+    export PATH="$PATH:$FLUTTER_DIR/bin"
+    echo "Flutter bin directory added to PATH for this session."
+else
+    echo "Flutter directory already exists. Skipping download and extraction."
+    # Ensure Flutter is in PATH if directory exists
+    export PATH="$PATH:$FLUTTER_DIR/bin"
+fi
+
+# Run flutter doctor to check for dependencies
+echo "Running flutter doctor..."
+flutter doctor
+
+echo "--- End of Android Studio and Flutter Installation ---"
+
+
 # --- Zsh and Oh My Zsh Installation ---
 
 # Check if Zsh is already the default shell
@@ -225,7 +277,7 @@ if ! [ -d "$ZSH_SYNTAX_HIGHLIGHTING_DIR" ]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_SYNTAX_HIGHLIGHTING_DIR
 fi
 
-export PATH="$PATH:$HOME/Downloads/projects/flutter/bin"
+export PATH="$PATH:$HOME/flutter/bin" # Updated Flutter path
 export PATH="$PATH:/sbin:/usr/sbin"
 export PATH="$PATH:/usr/bin"
 export PATH="$PATH:$HOME/.pub-cache/bin"
