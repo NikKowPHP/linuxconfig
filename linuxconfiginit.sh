@@ -68,7 +68,55 @@ install_if_missing  python3-pip
 install_if_missing  flameshot
 install_if_missing  npm
 
+# Install PHP and Composer
+echo "--- Installing PHP and Composer ---"
+install_if_missing php
+install_if_missing php-cli
+install_if_missing php-curl
+install_if_missing php-mbstring
+install_if_missing php-xml
+install_if_missing php-zip
+if ! command -v composer &> /dev/null; then
+    echo "Installing Composer..."
+    curl -sS https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+else
+    echo "Composer is already installed. Skipping..."
+fi
 
+# Install PostgreSQL
+echo "--- Installing PostgreSQL ---"
+install_if_missing postgresql
+install_if_missing postgresql-contrib
+
+# Install ngrok
+echo "--- Installing ngrok ---"
+if ! command -v ngrok &> /dev/null; then
+    echo "Installing ngrok..."
+    wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
+    sudo unzip -o ngrok.zip -d /usr/local/bin
+    rm ngrok.zip
+else
+    echo "ngrok is already installed. Skipping..."
+fi
+
+# Install Node.js LTS (already handled by install_if_missing nodejs, assuming default apt is LTS or user manages versions)
+echo "--- Installing Node.js LTS (via apt) ---"
+# Specific steps for LTS might be needed if default apt is not LTS
+
+# Install Ruby LTS (via apt)
+echo "--- Installing Ruby LTS (via apt) ---"
+install_if_missing ruby
+# Specific steps for LTS might be needed if default apt is not LTS or user manages versions
+
+# Install Go LTS (via apt)
+echo "--- Installing Go LTS (via apt) ---"
+install_if_missing golang-go
+# Specific steps for LTS might be needed if default apt is not LTS or user manages versions
+
+# Install Python with package manager (pip is already installed)
+echo "--- Installing Python with package manager (pip) ---"
+# python3-pip is already handled by install_if_missing
 
 echo " -- docker intallation with docker compose-- "
 if ! command -v docker-compose &> /dev/null; then
