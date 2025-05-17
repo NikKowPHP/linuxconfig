@@ -1,6 +1,28 @@
 #!/bin/bash
 
 # Script to install specified packages, zsh with Oh My Zsh, vim, and configure git on Ubuntu.
+# Includes proxy management based on command-line arguments.
+
+# Function to set proxy environment variables
+set_proxy() {
+  export http_proxy="http://172.16.2.254:3128"
+  export https_proxy="http://172.16.2.254:3128"
+  export no_proxy="127.0.0.1, localhost"
+  echo "Proxy settings enabled."
+}
+
+# Function to unset proxy environment variables
+unset_proxy() {
+  unset http_proxy
+  unset https_proxy
+  unset no_proxy
+  echo "Proxy settings disabled."
+}
+
+# Check for command-line argument to set proxy
+if [[ "$1" == "--proxy" && "$2" == "setup" ]]; then
+  set_proxy
+fi
 
 # Update the package list
 sudo apt update
@@ -48,7 +70,7 @@ install_if_missing  npm
 
 
 
-echo " -- docker intallation with docker compose-- " 
+echo " -- docker intallation with docker compose-- "
 if ! command -v docker-compose &> /dev/null; then
     wget https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64
     sudo mv docker-compose-linux-x86_64 /usr/bin/docker-compose
@@ -70,8 +92,8 @@ if command -v npm &> /dev/null; then
     echo "npm is installed, configuring it..."
     mkdir -p ~/.npm-global
     npm config set prefix '~/.npm-global'
-    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
-    source ~/.bashrc
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+    source ~/.zshrc
     npm install -g create-next-app
 else
     echo "npm is not installed, skipping npm configurations."
@@ -79,6 +101,17 @@ fi
 
 # Check for and install code if it's not already available
 install_code
+
+# --- Install Homebrew (Linuxbrew) ---
+echo "--- Installing Homebrew (Linuxbrew) ---"
+if ! command -v brew &> /dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Add Homebrew to PATH for the current session
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+else
+    echo "Homebrew is already installed. Skipping..."
+fi
 
 # --- Zsh and Oh My Zsh Installation ---
 
@@ -105,7 +138,7 @@ fi
 # Create a new .zshrc file
 cat << 'EOF' > ~/.zshrc
 export ZSH="$HOME/.oh-my-zsh"
-
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 plugins=(
   git
   zsh-autosuggestions
@@ -115,9 +148,9 @@ plugins=(
 
 ZSH_THEME="agnoster"
 
-eval \`dircolors ~/.dir_colors/dircolors\`
+# eval \`dircolors ~/.dir_colors/dircolors\`
 
-prompt_context() {} 
+# prompt_context() {}
 
 # Large history file
 HISTSIZE=10000000
@@ -129,7 +162,7 @@ setopt hist_ignore_all_dups hist_save_nodups
 source $ZSH/oh-my-zsh.sh
 
 # Colors:
-eval \`dircolors ~/.dir_colors/dircolors\`
+# eval \`dircolors ~/.dir_colors/dircolors\`
 
 # Install fzf (if not already installed)
 if ! [ -d "$HOME/.fzf" ]; then
@@ -139,24 +172,23 @@ fi
 export FZF_BASE="/home/.fzf"
 
 # Install zsh-syntax-highlighting
-ZSH_SYNTAX_HIGHLIGHTING_DIR="/home/kasjer/zsh-syntax-highlighting"
+ZSH_SYNTAX_HIGHLIGHTING_DIR="$HOME/zsh-syntax-highlighting"
 if ! [ -d "$ZSH_SYNTAX_HIGHLIGHTING_DIR" ]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_SYNTAX_HIGHLIGHTING_DIR
 fi
 
-export PATH="$PATH:/home/kasjer/Downloads/projects/flutter/bin/flutter"
+export PATH="$PATH:$HOME/Downloads/projects/flutter/bin"
 export PATH="$PATH:/sbin:/usr/sbin"
 export PATH="$PATH:/usr/bin"
-export PATH="$PATH:/home/kasjer/Downloads/projects/flutter/bin"
 export PATH="$PATH:$HOME/.pub-cache/bin"
 export PATH="$PATH:$HOME"
 
 # Assuming SDK is located at ~/Android/Sdk
-export ANDROID_HOME=/home/kasjer/Android/Sdk  
+export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools"
 
 
 
@@ -166,10 +198,15 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#888888'
 
 export MYVIMRC=$HOME/.config/nvim/init.lua  # Or init.vim
 export CHROME_EXECUTABLE="/usr/bin/google-chrome-stable"
-eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-alias cursor='/home/kasjer/.local/share/cvm/active'
+# eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+alias cursor="$HOME/.local/share/cvm/active"
 alias cvm="$HOME/cvm.sh"
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export PATH=~/.npm-global/bin:$PATH
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 EOF
 
 echo "Zsh configured based on your existing settings."
